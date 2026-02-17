@@ -206,3 +206,14 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 app.py
+
+# Local backend test assets
+sample1.png
+sample2.png
+#Temp output files
+temp_*
+*.png
+*.json
+__pycache__/
+venv/
+
