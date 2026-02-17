@@ -1,64 +1,125 @@
 import os
+import random
 import numpy as np
-import tensorflow as tf
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.optimizers import Adam
+import tensorflow as tf
 
 from preprocessing.preprocess import preprocess_image
 from model.siamese_model import build_siamese_model
 
-GENUINE_PATH = "data/genuine"
-FORGED_PATH = "data/forged"
+DATA_DIR = "data"
+GENUINE_DIR = os.path.join(DATA_DIR, "genuine")
+FORGED_DIR = os.path.join(DATA_DIR, "forged")
 
-def load_images(folder):
-    images = []
-    for file in os.listdir(folder):
-        images.append(preprocess_image(os.path.join(folder, file)))
-    return images
+VALID_EXTENSIONS = (".png", ".jpg", ".jpeg", ".bmp")
+
+
+def load_image_paths():
+    genuine_images = [
+        os.path.join(GENUINE_DIR, f)
+        for f in os.listdir(GENUINE_DIR)
+        if f.lower().endswith(VALID_EXTENSIONS)
+    ]
+
+    forged_images = [
+        os.path.join(FORGED_DIR, f)
+        for f in os.listdir(FORGED_DIR)
+        if f.lower().endswith(VALID_EXTENSIONS)
+    ]
+
+    return genuine_images, forged_images
+
 
 def create_pairs(genuine, forged):
     pairs = []
     labels = []
 
-    # Genuine vs Genuine (label = 1)
-    for i in range(len(genuine)-1):
-        pairs.append([genuine[i], genuine[i+1]])
+    random.shuffle(genuine)
+    random.shuffle(forged)
+
+    # Create balanced positive and negative pairs
+    num_pairs = min(len(genuine), len(forged))
+
+    # Positive pairs (random genuine-genuine)
+    for _ in range(num_pairs):
+        img1 = random.choice(genuine)
+        img2 = random.choice(genuine)
+        pairs.append([img1, img2])
         labels.append(1)
 
-    # Genuine vs Forged (label = 0)
-    for i in range(min(len(genuine), len(forged))):
-        pairs.append([genuine[i], forged[i]])
+    # Negative pairs (genuine-forged)
+    for _ in range(num_pairs):
+        img1 = random.choice(genuine)
+        img2 = random.choice(forged)
+        pairs.append([img1, img2])
         labels.append(0)
 
-    return np.array(pairs), np.array(labels)
+    return pairs, labels
+
+
+def preprocess_pairs(pairs):
+    img1 = []
+    img2 = []
+
+    for pair in pairs:
+        img1.append(preprocess_image(pair[0]))
+        img2.append(preprocess_image(pair[1]))
+
+    return np.array(img1), np.array(img2)
+
 
 def main():
-    genuine = load_images(GENUINE_PATH)
-    forged = load_images(FORGED_PATH)
 
+    print("Loading dataset...")
+    genuine, forged = load_image_paths()
+
+    print(f"Genuine images: {len(genuine)}")
+    print(f"Forged images: {len(forged)}")
+
+    print("Creating pairs...")
     pairs, labels = create_pairs(genuine, forged)
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        pairs, labels, test_size=0.2, random_state=42
+    labels = np.array(labels)
+
+    print("Preprocessing images...")
+    img1, img2 = preprocess_pairs(pairs)
+
+    X_train_1, X_val_1, X_train_2, X_val_2, y_train, y_val = train_test_split(
+        img1, img2, labels, test_size=0.2, random_state=42, stratify=labels
     )
 
+    print("Building model...")
     model = build_siamese_model()
-    model.compile(
-        loss='binary_crossentropy',
-        optimizer=Adam(0.001),
-        metrics=['accuracy']
+
+    # Callbacks
+    early_stop = tf.keras.callbacks.EarlyStopping(
+        monitor="val_loss",
+        patience=5,
+        restore_best_weights=True
     )
 
+    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
+        monitor="val_loss",
+        factor=0.5,
+        patience=3,
+        verbose=1
+    )
+
+    print("Training model...")
     model.fit(
-        [X_train[:,0], X_train[:,1]],
+        [X_train_1, X_train_2],
         y_train,
-        validation_data=([X_test[:,0], X_test[:,1]], y_test),
-        batch_size=8,
-        epochs=15
+        validation_data=([X_val_1, X_val_2], y_val),
+        epochs=30,
+        batch_size=16,
+        callbacks=[early_stop, reduce_lr]
     )
 
-    model.save("model/signature_model.h5")
-    print("Model trained and saved successfully.")
+    print("Saving model...")
+    model.save("signature_model.h5")
+
+    print("Training complete!")
+
 
 if __name__ == "__main__":
     main()
