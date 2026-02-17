@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
-from tensorflow.keras.models import load_model
+from keras.models import load_model
+
 def preprocess_image(image_bytes):
     image = np.frombuffer(image_bytes, np.uint8)
     img = cv2.imdecode(image, cv2.IMREAD_GRAYSCALE)
@@ -21,6 +22,7 @@ except:
             return np.array([[0.3]])  # simulate forged case
 
     model = DummyModel()
+
 
 
 def predict_similarity(img1, img2):
