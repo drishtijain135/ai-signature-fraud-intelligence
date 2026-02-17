@@ -98,10 +98,16 @@ def verify_signature(file1, file2):
     result = "Genuine" if similarity > 0.5 else "Forged"
 
     log_result({
-        "result": result,
-        "similarity": round(float(similarity), 2),
-        **risk_data
-    })
+    "result": result,
+    "similarity": round(float(similarity), 2),
+    "risk_score": risk_data["risk_score"],
+    "risk_level": risk_data["risk_level"],
+    "fraud_probability": risk_data["fraud_probability"],
+    "behavioral_deviation_index": risk_data["behavioral_deviation_index"],
+    "explainability_image": explainability_file,
+    "execution_time_seconds": execution_time
+})
+
 
     execution_time = round(time.time() - start_time, 3)
     return {
