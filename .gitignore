@@ -216,4 +216,6 @@ temp_*
 *.json
 __pycache__/
 venv/
+#Local UI Testing
+ui_test.py
 
