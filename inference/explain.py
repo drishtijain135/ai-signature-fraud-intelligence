@@ -5,18 +5,34 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-def generate_explainability(diff):
-    # Ensure static folder exists
-    os.makedirs("static", exist_ok=True)
+STATIC_FOLDER = "static"
+MAX_IMAGES = 10  # keep only last 10 images
 
-    # Normalize diff for better visualization
+def cleanup_old_images():
+    files = sorted(
+        [f for f in os.listdir(STATIC_FOLDER) if f.startswith("explainability_")],
+        key=lambda x: os.path.getmtime(os.path.join(STATIC_FOLDER, x))
+    )
+
+    # Remove oldest files if limit exceeded
+    while len(files) >= MAX_IMAGES:
+        oldest = files.pop(0)
+        os.remove(os.path.join(STATIC_FOLDER, oldest))
+
+
+def generate_explainability(diff):
+
+    os.makedirs(STATIC_FOLDER, exist_ok=True)
+
+    # 🧹 Clean old images first
+    cleanup_old_images()
+
+    # Normalize diff
     diff_normalized = (diff - np.min(diff)) / (np.max(diff) - np.min(diff) + 1e-8)
 
-    # Unique filename (prevents overwrite)
     filename = f"explainability_{uuid.uuid4().hex}.png"
-    filepath = os.path.join("static", filename)
+    filepath = os.path.join(STATIC_FOLDER, filename)
 
-    # Plot heatmap
     plt.figure(figsize=(4, 3))
     plt.imshow(diff_normalized[0].squeeze(), cmap="hot")
     plt.axis("off")
@@ -25,5 +41,3 @@ def generate_explainability(diff):
     plt.close()
 
     return filename
-
-

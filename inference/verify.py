@@ -40,31 +40,47 @@ from inference.logger import log_result
 
 
 def verify_signature(file1, file2):
+    import time
+    start_time = time.time()
+
     img1 = preprocess_image(file1)
     img2 = preprocess_image(file2)
 
     similarity = predict_similarity(img1, img2)
 
     risk_data = calculate_risk(similarity)
+
     diff = np.abs(img1 - img2)
     explainability_file = generate_explainability(diff)
-
 
     result = "Genuine" if similarity > 0.5 else "Forged"
 
     log_result({
-    "result": result,
-    "similarity": round(float(similarity), 2),
-    **risk_data
-})
-
-    return {
-    "status": "success",
-    "analysis": {
         "result": result,
         "similarity": round(float(similarity), 2),
-        **risk_data,
-        "explainability_image": f"http://127.0.0.1:5000/static/{explainability_file}"
+        **risk_data
+    })
 
+    execution_time = round(time.time() - start_time, 3)
+
+    return {
+        "status": "success",
+        "prediction": {
+            "result": result,
+            "similarity": round(float(similarity), 2)
+        },
+        "risk_analysis": {
+            "risk_score": risk_data["risk_score"],
+            "risk_level": risk_data["risk_level"],
+            "fraud_probability": risk_data["fraud_probability"],
+            "behavioral_deviation_index": risk_data["behavioral_deviation_index"]
+        },
+        "explainability": {
+            "heatmap_url": f"http://127.0.0.1:5000/static/{explainability_file}"
+        },
+        "metadata": {
+            "execution_time_seconds": execution_time
+        }
     }
-}
+
+

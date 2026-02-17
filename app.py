@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify
 from inference.verify import verify_signature
 import uuid
@@ -31,7 +32,15 @@ def verify():
     test_file.save(test_path)
 
     result = verify_signature(ref_path, test_path)
+    # Delete temp files after processing
+    if os.path.exists(ref_path):
+        os.remove(ref_path)
+
+    if os.path.exists(test_path):
+        os.remove(test_path)
+
     return jsonify(result)
+
 
 if __name__ == "__main__":
     app.run(debug=False)
