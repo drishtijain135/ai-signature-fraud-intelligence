@@ -1,10 +1,21 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>AI Signature Fraud Detection</title>
-</head>
-<body>
-    <h1>🚀 AI Signature Fraud Detection UI Working!</h1>
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class=""container">
+ <div class="hero">
+    <h1>AI Signature Fraud Detection UI Working!</h1>
     <p>This is my Flask frontend.</p>
-</body>
-</html>
+ </div>
+
+ <div class="upload-section">
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="signature" accept="image/*" required>
+        <br>
+        <button type="submit">Check Signature</button>
+    </form>
+ </div>
+</div>
+
+{% endblock %}
