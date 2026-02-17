@@ -1,16 +1,29 @@
 def calculate_risk(similarity):
-    fraud_probability = 1 - similarity
+    """
+    Converts similarity score into financial fraud intelligence metrics.
+    """
+
+    # Convert similarity into fraud probability
+    fraud_probability = 1 - float(similarity)
+
+    # Risk Score (0–100)
     risk_score = fraud_probability * 100
 
-    if risk_score < 40:
-        level = "Low Risk"
-    elif risk_score < 70:
-        level = "Medium Risk"
+    # Behavioral Deviation Index (scaled indicator)
+    behavioral_deviation_index = fraud_probability * 10
+
+    # Risk Level Classification
+    if risk_score >= 75:
+        risk_level = "High Risk"
+    elif risk_score >= 40:
+        risk_level = "Medium Risk"
     else:
-        level = "High Risk"
+        risk_level = "Low Risk"
 
     return {
         "risk_score": round(risk_score, 2),
         "fraud_probability": round(fraud_probability, 2),
-        "risk_level": level
+        "behavioral_deviation_index": round(behavioral_deviation_index, 2),
+        "risk_level": risk_level
     }
+

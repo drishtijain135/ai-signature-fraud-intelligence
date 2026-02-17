@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+from tensorflow.keras.models import load_model
+
 
 def preprocess_image(image_path):
     img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
@@ -13,8 +15,11 @@ MODEL_PATH = "model/saved_model.h5"
 #model = load_model(MODEL_PATH)
 try:
     model = load_model(MODEL_PATH)
-except:
+    print("✅ Trained model loaded successfully.")
+except Exception as e:
     print("⚠️ Trained model not found. Using dummy model for testing.")
+    print("Error:", e)
+
 
     class DummyModel:
         def predict(self, inputs):
@@ -31,6 +36,8 @@ def predict_similarity(img1, img2):
 
 from inference.risk import calculate_risk
 from inference.explain import generate_explainability
+from inference.logger import log_result
+
 
 def verify_signature(file1, file2):
     img1 = preprocess_image(file1)
@@ -39,12 +46,25 @@ def verify_signature(file1, file2):
     similarity = predict_similarity(img1, img2)
 
     risk_data = calculate_risk(similarity)
-    generate_explainability(img1)
+    diff = np.abs(img1 - img2)
+    explainability_file = generate_explainability(diff)
+
 
     result = "Genuine" if similarity > 0.5 else "Forged"
 
+    log_result({
+    "result": result,
+    "similarity": round(float(similarity), 2),
+    **risk_data
+})
+
     return {
+    "status": "success",
+    "analysis": {
         "result": result,
-        "similarity": round(similarity, 2),
-        **risk_data
+        "similarity": round(float(similarity), 2),
+        **risk_data,
+        "explainability_image": f"http://127.0.0.1:5000/static/{explainability_file}"
+
     }
+}
