@@ -1,3 +1,4 @@
+from flask import render_template
 from flask import Flask, request, jsonify
 from inference.verify import verify_signature
 import uuid
@@ -6,7 +7,7 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
 def home():
-    return "AI Signature Fraud Backend Running"
+    return render_template("index.html")
 
 @app.route("/verify", methods=["GET", "POST"])
 def verify():
