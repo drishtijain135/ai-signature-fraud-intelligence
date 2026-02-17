@@ -1,14 +1,14 @@
 import cv2
 import numpy as np
-from keras.models import load_model
 
-def preprocess_image(image_bytes):
-    image = np.frombuffer(image_bytes, np.uint8)
-    img = cv2.imdecode(image, cv2.IMREAD_GRAYSCALE)
+def preprocess_image(image_path):
+    img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
     img = cv2.resize(img, (220, 155))
+    img = cv2.GaussianBlur(img, (5, 5), 0)
     img = img / 255.0
-    img = np.expand_dims(img, axis=(0, -1))
+    img = img.reshape(1, 155, 220, 1)
     return img
+
 MODEL_PATH = "model/saved_model.h5"
 #model = load_model(MODEL_PATH)
 try:
@@ -30,7 +30,7 @@ def predict_similarity(img1, img2):
     return prediction
 
 from inference.risk import calculate_risk
-from inference.explain import generate_heatmap
+from inference.explain import generate_explainability
 
 def verify_signature(file1, file2):
     img1 = preprocess_image(file1)
@@ -39,7 +39,7 @@ def verify_signature(file1, file2):
     similarity = predict_similarity(img1, img2)
 
     risk_data = calculate_risk(similarity)
-    generate_heatmap(img1, img2)
+    generate_explainability(img1)
 
     result = "Genuine" if similarity > 0.5 else "Forged"
 
