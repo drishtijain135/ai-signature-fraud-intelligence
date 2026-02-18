@@ -41,7 +41,10 @@ def build_base_network():
     x = layers.Dense(128)(x)
 
     # Normalize embeddings (VERY IMPORTANT for Siamese)
-    outputs = layers.Lambda(lambda t: tf.math.l2_normalize(t, axis=1))(x)
+    outputs = layers.Lambda(
+    lambda t: tf.math.l2_normalize(t, axis=1),
+    output_shape=(128,)
+    )(x)
 
     return Model(inputs, outputs, name="FeatureExtractor")
 
@@ -65,7 +68,10 @@ def build_siamese_model():
     embedding_b = base_network(input_b)
 
     # TRUE Euclidean distance
-    distance = layers.Lambda(euclidean_distance)([embedding_a, embedding_b])
+    distance = layers.Lambda(
+    euclidean_distance,
+    output_shape=(1,)
+    )([embedding_a, embedding_b])
 
     output = layers.Dense(1, activation="sigmoid")(distance)
 
