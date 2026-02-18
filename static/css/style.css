@@ -1,70 +1,202 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
-
+    font-family: 'Segoe UI', sans-serif;
+    min-height:100vh;
     background: url("/static/images/ai-bg.gif.gif") no-repeat center center fixed;
     background-size: cover;
+    position:relative;
 }
 body::before {
     content: "";
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
+    background: rgba(10, 15, 25, 0.55);  /* Dark glass overlay */
+    backdrop-filter: blur(2px);
+    z-index: 0;
+}
 
-    background: rgba(0, 0, 0, 0.6);
-    z-index: -1;
+
+label {
+    display: block;
+    margin-bottom: 8px;
+
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+
+    color: #cbd5e1;  /* soft gray-blue */
+    text-transform: uppercase;
 }
 
 
 nav {
-    background-color: #1f2937;
-    color: white;
-    padding: 15px;
-    text-align: center;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 20px 0;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.85),
+        rgba(30, 41, 59, 0.85)
+    );
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    transition: all 0.4s ease;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
+
+}
+nav::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 100%;
+    background: linear-gradient(
+        90deg,
+        #22d3ee,
+        #6366f1,
+        #22d3ee
+    );
+    background-size: 200% 100%;
+    animation: navLineMove 4s linear infinite;
+}
+@keyframes navLineMove {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 200% 50%;
+    }
 }
 
+
+nav.scrolled {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    background: rgba(15, 23, 42, 0.95);
+}
+
+nav h2 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color:#22d3ee;
+    
+}
 .hero {
-    text-align: center;
-    margin-top: 60px;
-}
-
-input[type="file"] {
+    
     margin-bottom: 20px;
 }
+.hero h1 {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #ffffff, #7f5af0, #2cb67d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero p {
+    margin-top: 15px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #cbd5e1;
+    letter-spacing: 0.5px;
+}
+
+
+
+
+input[type="file"] {
+    width: 100%;
+    padding: 12px;
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+
+    
+}
+input[type="file"]:hover {
+    border-color: #3b82f6;
+}
+
+
 
 button {
-    padding: 12px 28px;
-    background: linear-gradient(135deg, #2563eb, #1e40af);
-    color: white;
+    width: 100%;
+    padding: 16px;
+    margin-top: 25px;
     border: none;
-    border-radius: 8px;
-    font-size:15px;
-    font-weight:600;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
     cursor: pointer;
-    transition:all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+
+    background: linear-gradient(135deg, #6c50c0, #2cb67d);
+    color: white;
+
+    transition: all 0.3s ease;
 }
 
+/* Hover effect */
 button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
 }
+
+/* Click press effect */
+button:active {
+    transform: scale(0.98);
+}
+
+/* Shine animation */
+button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: skewX(-20deg);
+    transition: 0.5s;
+}
+
+button:hover::before {
+    left: 130%;
+}
+
 
 .upload-section {
     text-align: center;
-    margin-top: 30px;
+    width:100%;
+    max-width:500px;
+    margin: 25px auto;
 }
 .container {
-    max-width: 500px;
-    margin: 100px auto;
-    padding: 40px;
-    background-color: rgb(129, 190, 201);
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(205, 61, 61, 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
     text-align: center;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+    margin-top: 120px;
 }
+
 /* Loader */
 .loader {
     border: 5px solid #f3f3f3;
@@ -83,15 +215,16 @@ button:hover {
 
 /* Result Card */
 .result-card {
-    margin-top: 20px;
-    padding: 20px;
-    border-radius: 12px;
-    width: 300px;
-    margin-left: auto;
-    margin-right: auto;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    transition: transform 0.3s ease;
+    margin-top: 25px;
+    padding: 25px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 420px;
+    backdrop-filter: blur(8px);
+    background: rgba(255,255,255,0.1);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
 }
+
 
 .result-card:hover {
     transform: scale(1.03);
@@ -118,12 +251,48 @@ button:hover {
     background-color: red; /* fallback */
     animation: fall 3s linear forwards;
 }
+.card {
+    background: rgba(15, 23, 42, 0.04);
+    backdrop-filter: blur(18px);
+
+    padding: 60px 50px;
+    border-radius: 24px;
+
+    width: 100%;
+    max-width: 650px;
+
+    border: 1.5px solid rgba(124, 58, 237, 0.6);
+
+    box-shadow:
+    0 0 25px rgba(124, 58, 237, 0.5),
+    0 0 60px rgba(34, 211, 238, 0.3),
+    0 30px 60px rgba(0, 0, 0, 0.7),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+
+
+    transition: all 0.4s ease;
+}
+
 
 
 @keyframes fall {
     to {
         transform: translateY(100vh) rotate(720deg);
     }
+}
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeInUp 0.8s ease;
 }
 
 

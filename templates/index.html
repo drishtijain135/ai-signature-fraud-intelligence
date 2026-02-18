@@ -3,28 +3,38 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<div class=""container">
- <div class="hero">
-    <h1>AI Signature Fraud Detection UI Working!</h1>
-    <p>This is my Flask frontend.</p>
- </div>
+<div class="container">
 
- <div class="upload-section">
-    <form action="/verify" method="POST" enctype="multipart/form-data">
+    <div class="card">
 
-    <label>Reference Signature:</label>
-    <input type="file" name="ref" accept="image/*" required>
-    <br><br>
+        <div class="hero">
+            <h1>AI Signature Fraud Detection is Live!</h1>
+            <p>Detect Fraudulent Signatures with Intelligent AI Analysis.</p>
+        </div>
 
-    <label>Test Signature:</label>
-    <input type="file" name="test" accept="image/*" required>
-    <br><br>
+        <form action="/verify" method="POST" enctype="multipart/form-data">
 
-    <button type="submit">Verify Signature</button>
+            <div class="upload-section">
+                <label>Reference Signature:</label>
+                <input type="file" name="ref" accept="image/*" required>
+            </div>
 
-    </form>
+            <div class="upload-section">
+                <label>Test Signature:</label>
+                <input type="file" name="test" accept="image/*" required>
+            </div>
 
- </div>
+            <button type="submit">Verify Signature</button>
+
+        </form>
+
+        <!-- Result Will Be Injected Here Dynamically -->
+
+        <div id="result-container"></div>
+
+    </div>
+
 </div>
+
 
 {% endblock %}
