@@ -37,10 +37,10 @@ def create_pairs(genuine, forged):
     random.shuffle(genuine)
     random.shuffle(forged)
 
-    # Create balanced positive and negative pairs
+    # Balanced pairs
     num_pairs = min(len(genuine), len(forged))
 
-    # Positive pairs (random genuine-genuine)
+    # Positive pairs (genuine-genuine)
     for _ in range(num_pairs):
         img1 = random.choice(genuine)
         img2 = random.choice(genuine)
@@ -78,7 +78,6 @@ def main():
 
     print("Creating pairs...")
     pairs, labels = create_pairs(genuine, forged)
-
     labels = np.array(labels)
 
     print("Preprocessing images...")
@@ -105,20 +104,28 @@ def main():
         verbose=1
     )
 
+    checkpoint = tf.keras.callbacks.ModelCheckpoint(
+        "signature_model_best.h5",
+        monitor="val_loss",
+        save_best_only=True,
+        verbose=1
+    )
+
     print("Training model...")
     model.fit(
         [X_train_1, X_train_2],
         y_train,
         validation_data=([X_val_1, X_val_2], y_val),
-        epochs=30,
+        epochs=17,   # ✅ changed from 30 to 17
         batch_size=16,
-        callbacks=[early_stop, reduce_lr]
+        callbacks=[early_stop, reduce_lr, checkpoint]
     )
 
-    print("Saving model...")
+    print("Saving final model...")
     model.save("signature_model.h5")
 
     print("Training complete!")
+    print("Best model saved as: signature_model_best.h5")
 
 
 if __name__ == "__main__":
