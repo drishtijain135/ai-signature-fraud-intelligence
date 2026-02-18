@@ -216,10 +216,11 @@ button:hover::before {
 /* Result Card */
 .result-card {
     margin-top: 25px;
-    padding: 25px;
+    padding: 18px 22px;
     border-radius: 16px;
     width: 100%;
-    max-width: 420px;
+    max-width: 340px;
+    margin:25px auto 0 auto;
     backdrop-filter: blur(8px);
     background: rgba(255,255,255,0.1);
     box-shadow: 0 15px 35px rgba(0,0,0,0.4);
